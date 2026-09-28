@@ -1,6 +1,6 @@
 .git
-# .env
-# .env.*
+.env
+.env.*
 !.env.example
 cookies.txt
 all_cookies.txt
