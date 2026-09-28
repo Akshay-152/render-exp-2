@@ -10,8 +10,8 @@ __pycache__/
 venv/
 
 # Environment files containing secrets
-.env
-.env.*
+# .env
+# .env.*
 
 # Downloads
 downloads/*.mp3
