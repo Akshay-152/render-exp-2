@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "tasks": {
+    "29a9b8e1-c235-494f-b79a-d02d14b37393": {
+      "status": "done",
+      "total": 1,
+      "processed": 1,
+      "current_title": "[\u0e41\u0e1b\u0e25\u0e44\u0e17\u0e22/Thaisub] Golden Brown - The Stranglers (GMV)",
+      "success": 1,
+      "failed": 0,
+      "error": "",
+      "download_progress": {
+        "status": "finished",
+        "downloaded_bytes": 3838229,
+        "total_bytes": 3838229,
+        "percent": 100.0,
+        "speed": 1750210.5583857624,
+        "eta": null
+      },
+      "logs": [
+        "\ud83d\udd0d Expanding playlists / resolving URLs...",
+        "\u2713 1 track(s) to process",
+        "Track 1/1: https://youtu.be/lPatTZ2XcKk?si=JnsTUx0vrvmYRkjv",
+        "Fetching metadata...",
+        "Downloading [\u0e41\u0e1b\u0e25\u0e44\u0e17\u0e22/Thaisub] Golden Brown - The Stranglers (GMV)...",
+        "Compressing to MP3...",
+        "\u2705 Track added: [\u0e41\u0e1b\u0e25\u0e44\u0e17\u0e22/Thaisub] Golden Brown - The Stranglers (GMV) - RenaisSongs."
+      ],
+      "done": true,
+      "cancelled": false,
+      "_revision": 25,
+      "_persisted_track_progress": {},
+      "track_progress": {},
+      "completed_tracks": [],
+      "overall_percent": 0.0,
+      "current_index": 0
+    },
+    "3644f1d9-75f5-4c4e-a658-ab5ca8dcec3c": {
+      "status": "failed",
+      "total": 1,
+      "processed": 0,
+      "current_title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+      "success": 0,
+      "failed": 0,
+      "error": "Server restarted before this job finished; the job was not resumed.",
+      "download_progress": {},
+      "logs": [
+        "\ud83d\udd0d Expanding playlists / resolving URLs...",
+        "\u2713 1 track(s) to process",
+        "Track 1/1: https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "Fetching metadata...",
+        "Downloading Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)...",
+        "Compressing to MP3...",
+        "Server restarted before this job finished; the job was not resumed."
+      ],
+      "done": true,
+      "cancelled": false,
+      "_revision": 41,
+      "_persisted_track_progress": {
+        "1": {
+          "stage": "compress",
+          "percent": 77
+        }
+      },
+      "track_progress": {
+        "1": {
+          "index": 1,
+          "stage": "compress",
+          "percent": 77.64082733612699,
+          "title": "Rick Astley - Never Gonna Give You Up (Official Video) (4K Remaster)",
+          "downloaded_bytes": 11829048,
+          "total_bytes": 11829048,
+          "uploaded_bytes": 0,
+          "speed": 5776482.411905733,
+          "eta": null
+        }
+      },
+      "completed_tracks": [],
+      "overall_percent": 74.31689928033524,
+      "current_index": 1
+    }
+  }
+}

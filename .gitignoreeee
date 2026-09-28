@@ -1,0 +1,30 @@
+# Never commit cookies — they are sensitive credentials.
+cookies.txt
+all_cookies.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# Environment files containing secrets
+.env
+.env.*
+
+# Downloads
+downloads/*.mp3
+downloads/*.webm
+downloads/*.m4a
+downloads/raw_*
+downloads/audio_*
+downloads/thumb_*
+
+# Logs
+server.log
+*.log
+
+# Local task history (may contain submitted URLs and error details)
+task_history.json
+task_history.json.*.tmp

@@ -1,0 +1,69 @@
+# Render Blueprint configuration for the YouTube audio uploader.
+# Docs: https://render.com/docs/blueprint-spec
+#
+# IMPORTANT: To download from Render (datacenter IPs), YouTube usually requires
+# authenticated cookies. Add cookies.txt as a Render Secret File. It is mounted
+# at /etc/secrets/cookies.txt and selected by COOKIES_FILE below.
+#
+#   1) Export cookies from a logged-in browser as cookies.txt (Netscape format,
+#      first line "# HTTP Cookie File").
+#   2) In the Render dashboard, add it under Environment > Secret Files with
+#      the filename cookies.txt.
+#
+# Do NOT commit cookies.txt to the repo (see .gitignore).
+
+services:
+  - type: web
+    name: audio-uploader
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /
+    # Free-plan instances spin down after inactivity; a task in progress
+    # would be lost on wake-up. Keep the service warm while a task runs.
+    autoDeploy: true
+    envVars:
+      - key: CLOUD_NAME
+        sync: false        # set in Render dashboard
+      - key: UPLOAD_PRESET
+        sync: false
+      - key: FIREBASE_API_KEY
+        sync: false
+      - key: FIREBASE_PROJECT_ID
+        sync: false
+      - key: OWNER_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_ID
+        sync: false
+      - key: SPOTIFY_CLIENT_SECRET
+        sync: false
+      - key: MAX_WORKERS
+        value: 5
+      # --- YouTube authentication (required for reliable downloads) ---
+      # Render Secret Files are mounted under /etc/secrets.
+      - key: COOKIES_FILE
+        value: /etc/secrets/cookies.txt
+      # Optional: browser profile to read cookies from (local use only; not
+      # available in the Docker container by default).
+      - key: COOKIES_FROM_BROWSER
+        sync: false
+      # Optional: residential/rotating proxy URL to route YouTube traffic
+      # through and bypass IP reputation blocks. e.g.
+      #   socks5://user:pass@host:1080  or  http://user:pass@host:8080
+      # Use a RESIDENTIAL proxy; datacenter proxies usually won't help.
+      - key: PROXY_URL
+        sync: false
+      # --- Retry / rate-limit tuning (optional) ---
+      - key: MAX_RETRIES
+        value: 3
+      - key: BASE_BACKOFF
+        value: 2.0
+      - key: MAX_BACKOFF
+        value: 30.0
+      # Lower TRACK_DELAY on Render free tier keeps large playlists moving
+      # while still jittering requests to avoid bot-detection bursts.
+      - key: TRACK_DELAY
+        value: 0.5
+      # Parallel fragment downloads per track (yt-dlp) for faster fetches.
+      - key: CONCURRENT_FRAGMENTS
+        value: 4

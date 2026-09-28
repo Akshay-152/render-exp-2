@@ -1,0 +1,15 @@
+.git
+.env
+.env.*
+!.env.example
+cookies.txt
+all_cookies.txt
+task_history.json
+task_history.json.*.tmp
+server.log
+*.log
+__pycache__/
+*.py[cod]
+downloads/
+.venv/
+venv/

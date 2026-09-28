@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Uploader Pro</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #00ff88;
+            --primary-glow: rgba(0, 255, 136, 0.4);
+            --bg-base: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            line-height: 1.5;
+        }
+
+        /* Glassmorphism Container */
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+            animation: fade-in-up 0.8s ease-out forwards;
+        }
+
+        @keyframes fade-in-up {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-align: center;
+        }
+
+        p.subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            font-size: 1.1rem;
+        }
+
+        .input-group {
+            position: relative;
+            margin-bottom: 2rem;
+        }
+
+        textarea {
+            width: 100%;
+            height: 160px;
+            background: rgba(15, 23, 42, 0.6);
+            color: var(--text-main);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.25rem;
+            font-size: 1rem;
+            font-family: 'Inter', monospace;
+            resize: vertical;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow), inset 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        textarea::placeholder {
+            color: rgba(148, 163, 184, 0.5);
+        }
+
+        button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            background: var(--primary);
+            color: #022c22;
+            border: none;
+            padding: 1rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 6px -1px var(--primary-glow), 0 2px 4px -1px var(--primary-glow);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px var(--primary-glow), 0 4px 6px -2px var(--primary-glow);
+            filter: brightness(1.1);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        /* Progress Area */
+        .progress-area {
+            margin-top: 2.5rem;
+            padding-top: 2.5rem;
+            border-top: 1px solid var(--glass-border);
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .progress-area.visible {
+            display: block;
+            opacity: 1;
+        }
+
+        .status-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 12px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 999px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.3);
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #059669, var(--primary));
+            border-radius: 999px;
+            transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            transform: translateX(-100%);
+            animation: shimmer 1.5s infinite;
+        }
+
+        @keyframes shimmer {
+            100% { transform: translateX(100%); }
+        }
+
+        .track-info {
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            word-break: break-word;
+        }
+
+        /* Logs Console */
+        .log-container {
+            background: #020617;
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            padding: 1rem;
+            height: 250px;
+            overflow-y: auto;
+            font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', Menlo, monospace;
+            font-size: 0.85rem;
+            color: #a7f3d0;
+            box-shadow: inset 0 4px 6px rgba(0,0,0,0.5);
+        }
+
+        .log-entry {
+            margin-bottom: 0.25rem;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 0.25rem;
+            word-wrap: break-word;
+        }
+        .log-entry:last-child {
+            border-bottom: none;
+        }
+
+        /* Custom Scrollbar for Logs */
+        .log-container::-webkit-scrollbar {
+            width: 8px;
+        }
+        .log-container::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.2);
+            border-radius: 4px;
+        }
+        .log-container::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+        }
+        .log-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        /* Cleaner section */
+        .cleaner-area {
+            margin-top: 2.5rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--glass-border);
+        }
+
+        .btn-secondary {
+            width: 100%;
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+            padding: 0.85rem 2rem;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-secondary:hover:not(:disabled) {
+            background: rgba(0, 255, 136, 0.08);
+        }
+        .btn-secondary:disabled { opacity: 0.6; cursor: wait; }
+
+        .clean-summary {
+            display: flex;
+            gap: 1rem;
+            margin: 1.25rem 0;
+            flex-wrap: wrap;
+        }
+        .clean-stat {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 0.9rem 1rem;
+            text-align: center;
+        }
+        .clean-stat .num { font-size: 1.5rem; font-weight: 700; color: var(--primary); }
+        .clean-stat .lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 0.25rem; }
+
+        .dupe-group {
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+            font-size: 0.9rem;
+        }
+        .dupe-group .dupe-title { font-weight: 600; color: var(--text-main); margin-bottom: 0.35rem; }
+        .dupe-group .dupe-artist { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.6rem; }
+        .dupe-rows { display: grid; gap: 0.3rem; }
+        .dupe-row { display: flex; justify-content: space-between; gap: 0.75rem; color: #a7f3d0; font-size: 0.8rem; }
+        .dupe-row.keep { color: var(--primary); font-weight: 600; }
+        .dupe-row .docid { color: rgba(148,163,184,0.7); font-family: monospace; }
+
+        .clean-actions { display: flex; gap: 0.75rem; margin-top: 1rem; }
+        .clean-actions button { flex: 1; }
+
+        .btn-danger {
+            background: #dc2626;
+            color: #fff;
+            border: none;
+            padding: 0.85rem 2rem;
+            font-size: 1rem;
+            font-weight: 700;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover:not(:disabled) { filter: brightness(1.1); }
+        .btn-danger:disabled { opacity: 0.6; cursor: wait; }
+
+        .btn-cancel {
+            display: none;
+            width: 100%;
+            margin-top: 0.75rem;
+            background: rgba(220, 38, 38, 0.12);
+            color: #f87171;
+            border: 1px solid rgba(220, 38, 38, 0.5);
+            padding: 0.75rem 2rem;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-cancel.visible { display: flex; align-items: center; justify-content: center; }
+        .btn-cancel:hover:not(:disabled) { background: rgba(220, 38, 38, 0.25); }
+        .btn-cancel:disabled { opacity: 0.6; cursor: wait; }
+
+        .tool-menu { display: flex; gap: 0.5rem; margin: 0 0 1.5rem; border-bottom: 1px solid var(--glass-border); }
+        .tool-tab { width: auto; flex: 1; padding: 0.75rem 1rem; border-radius: 8px 8px 0 0; background: transparent; color: var(--text-muted); box-shadow: none; border-bottom: 2px solid transparent; }
+        .tool-tab:hover { transform: none; filter: none; background: rgba(255,255,255,0.04); }
+        .tool-tab.active { color: var(--primary); border-bottom-color: var(--primary); background: rgba(0,255,136,0.06); }
+        .tool-view[hidden] { display: none; }
+        .clean-progress { margin: 1rem 0; color: var(--text-muted); font-size: 0.9rem; }
+        .clean-progress progress { width: 100%; height: 0.65rem; accent-color: var(--primary); }
+        #cleanCancelBtn[hidden] { display: none; }
+
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container { padding: 1.5rem; border-radius: 16px; }
+            h1 { font-size: 2rem; }
+            body { padding: 1rem; }
+            .clean-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Music Uploader Pro</h1>
+    <p class="subtitle">Cloud-powered batch uploading from YouTube & Spotify</p>
+
+    <nav class="tool-menu" role="tablist" aria-label="Uploader tools">
+        <button type="button" class="tool-tab active" id="uploadTab" role="tab" aria-selected="true" aria-controls="uploadView">Upload</button>
+        <button type="button" class="tool-tab" id="cleanerTab" role="tab" aria-selected="false" aria-controls="cleanerView">Duplicate Cleaner</button>
+    </nav>
+    
+    <section class="tool-view" id="uploadView" role="tabpanel" aria-labelledby="uploadTab">
+    <form id="uploadForm">
+        <div class="input-group">
+            <textarea name="urls" id="urls" placeholder="Drop your links here (one per line)...&#10;https://youtube.com/watch?v=...&#10;https://open.spotify.com/playlist/..."></textarea>
+        </div>
+        <button type="submit" id="submitBtn">
+            <svg style="width:20px;height:20px;margin-right:8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            Initialize Upload
+        </button>
+    </form>
+
+    <div id="progressArea" class="progress-area">
+        <div class="status-header">
+            <span id="statusMsg">Preparing engine...</span>
+            <span id="pctMsg">0%</span>
+        </div>
+        <div class="progress-bar-container">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+        <div class="track-info" id="trackInfo">
+            <svg style="width:16px;height:16px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3"></path></svg>
+            <span>Awaiting track...</span>
+        </div>
+        <div class="log-container" id="log"></div>
+        <button type="button" class="btn-cancel" id="cancelBtn">
+            ⏹️ Cancel Upload
+        </button>
+    </div>
+    </section>
+
+    <section class="tool-view cleaner-area" id="cleanerView" role="tabpanel" aria-labelledby="cleanerTab" hidden>
+        <h2 style="font-size:1.25rem;font-weight:700;margin-bottom:0.75rem;">🧹 Duplicate Cleaner</h2>
+        <p style="color:var(--text-muted);font-size:0.9rem;margin-bottom:1rem;">
+            Finds duplicate tracks in Firestore (same title &amp; artist) and keeps the best-quality copy. Only Firestore documents are removed — Cloudinary files stay intact.
+        </p>
+        <button type="button" class="btn-secondary" id="scanBtn">🔍 Scan for Duplicates</button>
+        <div id="cleanProgress" class="clean-progress" hidden>
+            <div id="cleanStatus">Preparing scan...</div>
+            <progress id="cleanProgressBar" max="100" value="0"></progress>
+            <button type="button" class="btn-cancel visible" id="cleanCancelBtn">Cancel cleaner job</button>
+        </div>
+        <div id="cleanResults" style="display:none;">
+            <div class="clean-summary">
+                <div class="clean-stat"><div class="num" id="statTracks">0</div><div class="lbl">Total Tracks</div></div>
+                <div class="clean-stat"><div class="num" id="statGroups">0</div><div class="lbl">Duplicate Groups</div></div>
+                <div class="clean-stat"><div class="num" id="statDeletable">0</div><div class="lbl">Deletable Copies</div></div>
+            </div>
+            <div id="dupeList"></div>
+            <div class="clean-actions">
+                <button type="button" class="btn-danger" id="deleteAllBtn">🗑️ Delete All Duplicates (Firestore)</button>
+            </div>
+        </div>
+    </section>
+</div>
+
+<script>
+    // ============================================================
+    // FRONTEND ⇄ SERVER COMMUNICATION (request/response polling)
+    // -------------------------------------------------------------
+    // 1. POST /api/start          → { task_id, total }
+    // 2. GET  /api/status/<id>    → { processed, total, current_title,
+    //                                 logs, status, success, error, done }
+    //    (polled every 1.5s — % always reflects real server state)
+    // ============================================================
+    const form = document.getElementById('uploadForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const progressArea = document.getElementById('progressArea');
+    const progressFill = document.getElementById('progressFill');
+    const statusMsg = document.getElementById('statusMsg');
+    const pctMsg = document.getElementById('pctMsg');
+    const trackInfo = document.querySelector('#trackInfo span');
+    const logDiv = document.getElementById('log');
+    const cancelBtn = document.getElementById('cancelBtn');
+
+    let currentTaskId = null;
+    let pollTimer = null;
+    let shownPct = 0;        // % currently rendered (animated)
+    let targetPct = 0;       // % reported by the server
+    let pctAnimating = false;
+    let lastLogCount = 0;
+    const TASK_STORAGE_KEY = 'music-uploader:last-task';
+
+    const BTN_IDLE = '<svg style="width:20px;height:20px;margin-right:8px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg> Initialize Upload';
+    const BTN_BUSY = '<svg style="width:20px;height:20px;margin-right:8px;animation:spin 1s linear infinite;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Processing...';
+
+    // ---------- smooth % animation (eases toward server target) ----------
+    function animatePct() {
+        pctAnimating = true;
+        shownPct += (targetPct - shownPct) * 0.2;
+        if (Math.abs(targetPct - shownPct) < 0.4) shownPct = targetPct;
+        const p = Math.round(shownPct * 10) / 10;
+        progressFill.style.width = p + '%';
+        pctMsg.textContent = Math.round(p) + '%';
+        if (shownPct !== targetPct) {
+            requestAnimationFrame(animatePct);
+        } else {
+            pctAnimating = false;
+        }
+    }
+
+    function setTargetPct(pct) {
+        targetPct = Math.max(targetPct, Math.min(100, pct));
+        if (!pctAnimating) requestAnimationFrame(animatePct);
+    }
+
+    // ---------- log console ----------
+    function addLog(message, color) {
+        const line = document.createElement('div');
+        line.className = 'log-entry';
+        if (color) line.style.color = color;
+        line.textContent = message;
+        logDiv.appendChild(line);
+        logDiv.scrollTop = logDiv.scrollHeight;
+    }
+
+    function renderLogs(logs) {
+        if (!Array.isArray(logs)) return;
+        if (logs.length < lastLogCount) {
+            // Server log buffer rotated — rebuild from scratch.
+            logDiv.innerHTML = '';
+            lastLogCount = 0;
+        }
+        logs.slice(lastLogCount).forEach(message => {
+            const failed = /❌|HTTP Error 403|Failed after retries|Download error/i.test(message);
+            addLog(message, failed ? '#ef4444' : undefined);
+        });
+        lastLogCount = logs.length;
+    }
+
+    function resultMessage(s) {
+        const success = Number(s.success) || 0;
+        const failed = Number(s.failed) || 0;
+        if (s.status === 'failed' && s.total > 0) {
+            return `All tracks failed (${success}/${s.total} uploaded)`;
+        }
+        if (s.status === 'partial' || failed > 0) {
+            return `Finished with errors (${success}/${s.total} uploaded, ${failed} failed)`;
+        }
+        return `Upload complete (${success}/${s.total} uploaded)`;
+    }
+
+    const stageLabels = {
+        metadata: 'Resolving metadata',
+        download: 'Downloading audio',
+        compress: 'Converting to MP3',
+        upload: 'Uploading to Cloudinary',
+        save: 'Saving to Firestore',
+        complete: 'Complete',
+        failed: 'Failed'
+    };
+
+    function formatBytes(value) {
+        if (!value) return '0 B';
+        const units = ['B', 'KiB', 'MiB', 'GiB'];
+        const unitIndex = Math.min(Math.floor(Math.log(value) / Math.log(1024)), units.length - 1);
+        return `${(value / (1024 ** unitIndex)).toFixed(unitIndex ? 1 : 0)} ${units[unitIndex]}`;
+    }
+
+    // ---------- status polling ----------
+    function startPolling() {
+        stopPolling();
+        pollTimer = setInterval(pollStatus, 1500);
+        pollStatus();
+    }
+
+    function stopPolling() {
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+    }
+
+    // ---------- cancel ----------
+    cancelBtn.addEventListener('click', async () => {
+        if (!currentTaskId) return;
+        cancelBtn.disabled = true;
+        cancelBtn.textContent = '⏹️ Cancelling... (finishing current downloads)';
+        try {
+            const r = await fetch('/api/cancel/' + encodeURIComponent(currentTaskId), { method: 'POST' });
+            const data = await r.json();
+            if (data.error) {
+                addLog('⚠️ Cancel failed: ' + data.error, '#f59e0b');
+            } else {
+                addLog('⏹️ Cancellation requested — finishing in-flight tracks...', '#f59e0b');
+                // Keep polling; the task will report done/cancelled shortly.
+            }
+        } catch (err) {
+            addLog('⚠️ Cancel request failed: ' + err.message, '#f59e0b');
+        } finally {
+            cancelBtn.disabled = false;
+        }
+    });
+
+    function showCancelBtn(show) {
+        cancelBtn.classList.toggle('visible', show);
+        if (show) {
+            cancelBtn.disabled = false;
+            cancelBtn.textContent = '⏹️ Cancel Upload';
+        }
+    }
+
+    async function pollStatus() {
+        if (!currentTaskId) return;
+        let s;
+        try {
+            const r = await fetch('/api/status/' + encodeURIComponent(currentTaskId));
+            if (r.status === 404) {
+                addLog('⚠️ Task not found on server (server may have restarted).', '#f59e0b');
+                try { localStorage.removeItem(TASK_STORAGE_KEY); } catch (error) { }
+                finishPolling(null);
+                return;
+            }
+            s = await r.json();
+        } catch (err) {
+            // Network hiccup — just wait for the next tick, keep polling.
+            addLog('⚠️ Connection hiccup — retrying...', '#f59e0b');
+            return;
+        }
+
+        if (s.error && s.status === 'failed') {
+            addLog('[ERROR] ' + s.error, '#ef4444');
+        }
+
+        if (s.status === 'expanding') {
+            // Playlist expansion runs server-side and can take a while.
+            statusMsg.textContent = 'Expanding playlists...';
+            if (!pctAnimating && targetPct === 0) {
+                progressFill.style.width = '100%';
+                progressFill.style.background = 'linear-gradient(90deg,#7c3aed,#c4b5fd)';
+                pctMsg.textContent = '...';
+            }
+        } else if (s.total > 0) {
+            // Real processing numbers — restore the normal bar color.
+            progressFill.style.background = '';
+            setTargetPct(Number.isFinite(s.overall_percent) ? s.overall_percent : (s.processed / s.total) * 100);
+            statusMsg.textContent = ['done', 'partial', 'failed'].includes(s.status)
+                ? resultMessage(s)
+                : s.status === 'cancelled'
+                ? `Cancelled (${s.success}/${s.total} uploaded)`
+                : `Processing ${s.processed}/${s.total} tracks`;
+        }
+        const trackState = (s.track_progress || {})[String(s.current_index)];
+        if (trackState && !s.done) {
+            const finished = (s.completed_tracks || []).length;
+            const stageLabel = stageLabels[trackState.stage] || 'Processing';
+            const songTitle = trackState.title || s.current_title || 'Current song';
+            const stagePercent = Number.isFinite(trackState.percent) ? ` ${Math.round(trackState.percent)}%` : '';
+            const bytes = trackState.stage === 'download' && trackState.total_bytes
+                ? ` · ${formatBytes(trackState.downloaded_bytes)} / ${formatBytes(trackState.total_bytes)}`
+                : trackState.stage === 'upload' && trackState.total_bytes
+                ? ` · ${formatBytes(trackState.uploaded_bytes)} / ${formatBytes(trackState.total_bytes)}`
+                : '';
+            const speed = trackState.speed ? ` · ${(trackState.speed / 1024 / 1024).toFixed(2)} MiB/s` : '';
+            statusMsg.textContent = `${stageLabel} · Song ${s.current_index}/${s.total}`;
+            trackInfo.textContent = `${finished}/${s.total} songs processed · ${songTitle} · ${stageLabel}${stagePercent}${bytes}${speed}`;
+        } else if (s.current_title) {
+            trackInfo.textContent = `${(s.completed_tracks || []).length}/${s.total} songs processed · ${s.current_title}`;
+        }
+        renderLogs(s.logs);
+
+        if (s.done) {
+            if (s.status !== 'done') progressFill.style.background = '';
+            showCancelBtn(false);
+            finishPolling(s);
+        }
+    }
+
+    function finishPolling(s) {
+        stopPolling();
+        if (s && ['done', 'partial', 'failed'].includes(s.status)) {
+            progressFill.style.background = '';
+            setTargetPct(100);
+            statusMsg.textContent = s.error
+                ? 'Job failed — see logs below'
+                : resultMessage(s);
+            trackInfo.textContent = s.error
+                ? s.error
+                : `${s.success} uploaded, ${s.failed || 0} failed`;
+            if (s.failed > 0) addLog(`Job finished with ${s.failed} failed track(s).`, '#ef4444');
+        } else if (s && s.status === 'cancelled') {
+            progressFill.style.background = '';
+            trackInfo.textContent = `Cancelled — ${s.success} of ${s.total} track(s) uploaded`;
+            addLog('⏹️ Upload cancelled.', '#f59e0b');
+        } else if (s && s.status === 'failed') {
+            progressFill.style.background = '';
+            statusMsg.textContent = 'Failed — see logs below';
+        }
+        currentTaskId = null;
+        showCancelBtn(false);
+        resetBtn();
+    }
+
+    // ---------- form submit ----------
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const urls = document.getElementById('urls').value
+            .split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+        if (!urls.length) {
+            alert('Please enter at least one URL.');
+            return;
+        }
+
+        // UI State Update
+        submitBtn.disabled = true;
+        submitBtn.style.opacity = '0.7';
+        submitBtn.innerHTML = BTN_BUSY.replace('Processing...', 'Starting...');
+
+        shownPct = 0; targetPct = 0; lastLogCount = 0;
+        progressFill.style.width = '0%';
+        pctMsg.textContent = '0%';
+        trackInfo.textContent = 'Awaiting track...';
+        logDiv.innerHTML = '';
+
+        try {
+            // Playlist expansion happens server-side inside this request,
+            // so it can take a few seconds — the button shows "Starting...".
+            const resp = await fetch('/api/start', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ urls: urls })
+            });
+            const data = await resp.json();
+
+            if (!resp.ok || data.error || !data.task_id) {
+                throw new Error(data.error || `Server returned HTTP ${resp.status} without a task ID`);
+            }
+
+            currentTaskId = data.task_id;
+            try { localStorage.setItem(TASK_STORAGE_KEY, currentTaskId); } catch (error) { }
+            progressArea.classList.add('visible');
+            addLog('Task started: ' + data.task_id);
+            statusMsg.textContent = 'Expanding playlists... (this can take a minute for big playlists)';
+            submitBtn.innerHTML = BTN_BUSY;
+            showCancelBtn(true);
+            startPolling();
+        } catch (error) {
+            alert('Failed to connect to server: ' + error.message);
+            resetBtn();
+        }
+    });
+
+    function resetBtn() {
+        stopPolling();
+        submitBtn.disabled = false;
+        submitBtn.style.opacity = '1';
+        submitBtn.innerHTML = BTN_IDLE;
+    }
+
+    // ============ DUPLICATE CLEANER ============
+    const scanBtn = document.getElementById('scanBtn');
+    const cleanResults = document.getElementById('cleanResults');
+    const dupeList = document.getElementById('dupeList');
+    const deleteAllBtn = document.getElementById('deleteAllBtn');
+    const uploadTab = document.getElementById('uploadTab');
+    const cleanerTab = document.getElementById('cleanerTab');
+    const uploadView = document.getElementById('uploadView');
+    const cleanerView = document.getElementById('cleanerView');
+    let currentScanId = null;
+
+    function selectTool(selectedTab) {
+        const showCleaner = selectedTab === cleanerTab;
+        uploadTab.classList.toggle('active', !showCleaner);
+        cleanerTab.classList.toggle('active', showCleaner);
+        uploadTab.setAttribute('aria-selected', String(!showCleaner));
+        cleanerTab.setAttribute('aria-selected', String(showCleaner));
+        uploadView.hidden = showCleaner;
+        cleanerView.hidden = !showCleaner;
+    }
+
+    uploadTab.addEventListener('click', () => selectTool(uploadTab));
+    cleanerTab.addEventListener('click', () => selectTool(cleanerTab));
+
+    function esc(s) {
+        const d = document.createElement('div');
+        d.textContent = s || '';
+        return d.innerHTML;
+    }
+
+    const cleanProgress = document.getElementById('cleanProgress');
+    const cleanProgressBar = document.getElementById('cleanProgressBar');
+    const cleanStatus = document.getElementById('cleanStatus');
+    const cleanCancelBtn = document.getElementById('cleanCancelBtn');
+    const CLEAN_TASK_STORAGE_KEY = 'music-uploader:last-clean-task';
+    let currentCleanJobId = null;
+    let currentCleanJobKind = '';
+
+    function renderScanResults(data) {
+        currentScanId = data.scan_id;
+        document.getElementById('statTracks').textContent = data.total_tracks;
+        document.getElementById('statGroups').textContent = data.duplicate_groups;
+        document.getElementById('statDeletable').textContent = data.deletable_tracks;
+        dupeList.innerHTML = '';
+        (data.groups || []).forEach(group => {
+            const div = document.createElement('div');
+            div.className = 'dupe-group';
+            let rows = '';
+            if (group.keep) rows += `<div class="dupe-row keep"><span>✓ KEEP (${(group.keep.size / 1048576).toFixed(1)} MB)</span><span class="docid">${esc(group.keep.docId)}</span></div>`;
+            (group.duplicates || []).forEach(duplicate => {
+                rows += `<div class="dupe-row"><span>✗ duplicate (${(duplicate.size / 1048576).toFixed(1)} MB)</span><span class="docid">${esc(duplicate.docId)}</span></div>`;
+            });
+            div.innerHTML = `<div class="dupe-title">${esc(group.title)}</div><div class="dupe-artist">${esc(group.artist)}</div><div class="dupe-rows">${rows}</div>`;
+            dupeList.appendChild(div);
+        });
+        if (!data.duplicate_groups) {
+            dupeList.innerHTML = '<div style="color:var(--primary);font-weight:600;">🎉 No duplicates found.</div>';
+            deleteAllBtn.style.display = 'none';
+        } else {
+            deleteAllBtn.style.display = '';
+        }
+        cleanResults.style.display = 'block';
+    }
+
+    function stopCleanerJob() {
+        currentCleanJobId = null;
+        currentCleanJobKind = '';
+        scanBtn.disabled = false;
+        scanBtn.textContent = '🔍 Scan for Duplicates';
+        deleteAllBtn.disabled = false;
+        deleteAllBtn.textContent = '🗑️ Delete All Duplicates (Firestore)';
+        cleanCancelBtn.hidden = true;
+        try { localStorage.removeItem(CLEAN_TASK_STORAGE_KEY); } catch (error) { }
+    }
+
+    async function pollCleanerJob() {
+        if (!currentCleanJobId) return;
+        try {
+            const response = await fetch(`/api/clean/status/${encodeURIComponent(currentCleanJobId)}`);
+            const job = await response.json();
+            if (!response.ok) throw new Error(job.error || `HTTP ${response.status}`);
+            const total = Number(job.total) || 0;
+            const processed = Number(job.processed) || 0;
+            const percent = Number(job.percent) || 0;
+            cleanProgressBar.value = percent;
+            cleanStatus.textContent = `${job.phase} · ${total ? `${processed}/${total} items · ` : ''}${Math.round(percent)}%`;
+            if (!job.done) {
+                setTimeout(pollCleanerJob, 1000);
+                return;
+            }
+
+            const finishedKind = currentCleanJobKind;
+            stopCleanerJob();
+            if (job.status === 'done' && finishedKind === 'scan') {
+                renderScanResults(job.result);
+            } else if (job.status === 'done' && finishedKind === 'delete') {
+                const result = job.result || {};
+                alert(`Deleted ${result.deleted_count || 0} duplicate(s).` + (result.failed_count ? ` ⚠️ ${result.failed_count} failed.` : ''));
+                scanBtn.click();
+            } else if (job.error) {
+                cleanStatus.textContent = `Cleaner failed: ${job.error}`;
+            } else if (job.status === 'cancelled') {
+                cleanStatus.textContent = 'Cleaner job cancelled.';
+            }
+        } catch (error) {
+            cleanStatus.textContent = `Cleaner connection failed: ${error.message}`;
+            stopCleanerJob();
+        }
+    }
+
+    async function startCleanerJob(url, body, kind) {
+        currentCleanJobKind = kind;
+        cleanProgress.hidden = false;
+        cleanProgressBar.value = 0;
+        cleanCancelBtn.hidden = false;
+        scanBtn.disabled = true;
+        deleteAllBtn.disabled = true;
+        scanBtn.textContent = kind === 'scan' ? '🔍 Scanning...' : '🔍 Scan for Duplicates';
+        deleteAllBtn.textContent = kind === 'delete' ? '🗑️ Deleting...' : '🗑️ Delete All Duplicates (Firestore)';
+        cleanStatus.textContent = 'Starting cleaner job...';
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(body || {})
+            });
+            const data = await response.json();
+            if (!response.ok || !data.job_id) throw new Error(data.error || `HTTP ${response.status}`);
+            currentCleanJobId = data.job_id;
+            try { localStorage.setItem(CLEAN_TASK_STORAGE_KEY, JSON.stringify({ id: data.job_id, kind })); } catch (error) { }
+            pollCleanerJob();
+        } catch (error) {
+            cleanStatus.textContent = `Could not start cleaner job: ${error.message}`;
+            stopCleanerJob();
+        }
+    }
+
+    cleanCancelBtn.addEventListener('click', async () => {
+        if (!currentCleanJobId) return;
+        cleanCancelBtn.disabled = true;
+        cleanStatus.textContent = 'Requesting cancellation...';
+        try {
+            await fetch(`/api/clean/cancel/${encodeURIComponent(currentCleanJobId)}`, { method: 'POST' });
+        } catch (error) {
+            cleanStatus.textContent = `Cancel request failed: ${error.message}`;
+        } finally {
+            cleanCancelBtn.disabled = false;
+        }
+    });
+
+    function reconnectCleanerJob() {
+        let saved;
+        try { saved = JSON.parse(localStorage.getItem(CLEAN_TASK_STORAGE_KEY) || 'null'); } catch (error) { return; }
+        if (!saved || !saved.id) return;
+        currentCleanJobId = saved.id;
+        currentCleanJobKind = saved.kind;
+        cleanProgress.hidden = false;
+        cleanCancelBtn.hidden = false;
+        scanBtn.disabled = true;
+        deleteAllBtn.disabled = true;
+        selectTool(cleanerTab);
+        cleanStatus.textContent = 'Reconnecting to cleaner job...';
+        pollCleanerJob();
+    }
+
+    scanBtn.addEventListener('click', async () => {
+        cleanResults.style.display = 'none';
+        await startCleanerJob('/api/clean/scan', {}, 'scan');
+    });
+
+    deleteAllBtn.addEventListener('click', async () => {
+        if (!currentScanId) return;
+        if (!confirm('Delete ALL duplicate Firestore documents from the current scan? Cloudinary files are kept.')) return;
+        await startCleanerJob('/api/clean/delete', { scan_id: currentScanId, delete_all: true }, 'delete');
+    });
+
+    function reconnectSavedTask() {
+        let savedTaskId;
+        try { savedTaskId = localStorage.getItem(TASK_STORAGE_KEY); } catch (error) { return; }
+        if (!savedTaskId) return;
+        currentTaskId = savedTaskId;
+        progressArea.classList.add('visible');
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = BTN_BUSY;
+        statusMsg.textContent = 'Reconnecting to the current job...';
+        showCancelBtn(true);
+        startPolling();
+    }
+
+    reconnectSavedTask();
+    reconnectCleanerJob();
+</script>
+<style>
+    @keyframes spin { 100% { transform: rotate(360deg); } }
+</style>
+</body>
+</html>

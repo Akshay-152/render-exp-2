@@ -1,0 +1,1 @@
+FAILED|MetadataError|yt-dlp error: [0;31mERROR:[0m [youtube] kk2o6LpMh3k: Requested format is not available. Use --list-formats for a list of available formats | URL: https://youtu.be/kk2o6LpMh3k | Video ID: kk2o6LpMh3k | Original yt-dlp error: [0;31mERROR:[0m [youtube] kk2o6LpMh3k: Requested format is not available. Use --list-formats for a list of available formats
