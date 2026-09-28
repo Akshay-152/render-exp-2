@@ -24,19 +24,19 @@ services:
     autoDeploy: true
     envVars:
       - key: CLOUD_NAME
-        sync: false        # set in Render dashboard
+        value: cb0gwclo
       - key: UPLOAD_PRESET
-        sync: false
+        value: myupload
       - key: FIREBASE_API_KEY
-        sync: false
+        value: AIzaSyC-ft54KwehdTIsV93xBjLbd0nMeZ4ibDw
       - key: FIREBASE_PROJECT_ID
-        sync: false
+        value: akshay-b744a
       - key: OWNER_ID
-        sync: false
+        value: user_4919
       - key: SPOTIFY_CLIENT_ID
-        sync: false
+        value: cb9bcda5e5214191acdcd534c964024d
       - key: SPOTIFY_CLIENT_SECRET
-        sync: false
+        value: 4b37e4b4fe284bcf8b1467c77321725d
       - key: MAX_WORKERS
         value: 5
       # --- YouTube authentication (required for reliable downloads) ---
